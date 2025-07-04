@@ -1,0 +1,267 @@
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    <title>Django Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calculator {
+            background: #f5f7fa;
+            padding: 20px;
+            border-radius: 20px;
+            width: 320px;
+        }
+
+        .display {
+            width: 98%;
+            height: 60px;
+            font-size: 24px;
+            text-align: right;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            background: #e3eaf2;
+            border-radius: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            height: 50px;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .gray { background-color: #f1f1f1; }
+        .blue { background-color: #dbe8fb; }
+        .darkblue { background-color:rgb(33, 118, 255); color: white; }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        function append(val) {
+            const input = document.getElementById('id_my_post_param');
+            input.value += val;
+        }
+
+        function clearEntry() {
+            const input = document.getElementById('id_my_post_param');
+            input.value = input.value.slice(0, -1);
+        }
+
+        function clearAll() {
+            const input = document.getElementById('id_my_post_param');
+            input.value = '';
+        }
+    </script>
+</head>
+<body>
+    <form method="post" class="calculator">
+        {% csrf_token %}
+        <input type="text" id="id_my_post_param" class="display" name="my_post_param" value="{% if get_param %}{{ get_param }}{% endif %}" readonly>
+
+        {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %}
+
+        <div class="grid">
+            <button type="button" class="blue" onclick="append('(')">(</button>
+            <button type="button" class="blue" onclick="append(')')">)</button>
+            <button type="button" class="blue" onclick="clearEntry()">C</button>
+            <button type="button" class="blue" onclick="clearAll()">AC</button>
+
+            <button type="button" class="gray" onclick="append('7')">7</button>
+            <button type="button" class="gray" onclick="append('8')">8</button>
+            <button type="button" class="gray" onclick="append('9')">9</button>
+            <button type="button" class="blue" onclick="append('/')">÷</button>
+
+            <button type="button" class="gray" onclick="append('4')">4</button>
+            <button type="button" class="gray" onclick="append('5')">5</button>
+            <button type="button" class="gray" onclick="append('6')">6</button>
+            <button type="button" class="blue" onclick="append('*')">×</button>
+
+            <button type="button" class="gray" onclick="append('1')">1</button>
+            <button type="button" class="gray" onclick="append('2')">2</button>
+            <button type="button" class="gray" onclick="append('3')">3</button>
+            <button type="button" class="blue" onclick="append('-')">−</button>
+
+            <button type="button" class="gray" onclick="append('0')">0</button>
+            <button type="button" class="gray" onclick="append('.')">.</button>
+            <button type="submit" class="darkblue">=</button>
+            <button type="button" class="blue" onclick="append('+')">+</button>
+        </div>
+    </form>
+</body>
+</html> {% endcomment %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Django Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calculator {
+            background: #f5f7fa;
+            padding: 20px;
+            border-radius: 20px;
+            width: 360px;
+        }
+
+        .display {
+            width: 98%;
+            height: 60px;
+            font-size: 24px;
+            text-align: right;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            background: #e3eaf2;
+            border-radius: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            height: 45px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .gray { background-color: #f1f1f1; }
+        .blue { background-color: #dbe8fb; }
+        .darkblue { background-color: rgb(33, 118, 255); color: white; }
+
+        .error, .success {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .error { color: red; }
+        .success { color: #333; }
+    </style>
+
+    <script>
+        function append(val) {
+            const input = document.getElementById('id_my_post_param');
+            input.value += val;
+        } 
+
+        {% comment %} function append(val) {
+            const input = document.getElementById('id_my_post_param');
+            const funcs = ['sin', 'cos', 'tan', 'sinh', 'cosh', 'tanh', 'log', 'ln', 'sqrt'];
+
+            if (funcs.includes(val)) {
+                if (input.value !== "") {
+                    input.value += "*" + val + "(";
+                } else {
+                    input.value += val + "(";
+                }
+            } else {
+                input.value += val;
+            }
+
+            console.log(input.value);
+        } {% endcomment %}
+
+
+        function clearEntry() {
+            const input = document.getElementById('id_my_post_param');
+            input.value = input.value.slice(0, -1);
+        }
+
+        function clearAll() {
+            const input = document.getElementById('id_my_post_param');
+            input.value = '';
+        }
+    </script>
+</head>
+<body>
+    <form method="post" class="calculator">
+        {% csrf_token %}
+        <input type="text" id="id_my_post_param" class="display " name="my_post_param"
+       value="{% if error_message %}{{ error_message }}{% else %}{{ get_param }}{% endif %}" readonly>
+
+        {% comment %} <input type="text" id="id_my_post_param" class="display" name="my_post_param" value="{% if get_param %}{{ get_param }}{% endif %}" readonly>
+
+        {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %} {% endcomment %}
+
+        <div class="grid">
+            <button type="button" class="blue" onclick="append('(')">(</button>
+            <button type="button" class="blue" onclick="append(')')">)</button>
+            <button type="button" class="blue" onclick="clearEntry()">C</button>
+            <button type="button" class="blue" onclick="clearAll()">AC</button>
+
+            <button type="button" class="blue" onclick="append('sin(')">sin</button>
+            <button type="button" class="blue" onclick="append('cos(')">cos</button>
+            <button type="button" class="blue" onclick="append('tan(')">tan</button>
+            <button type="button" class="blue" onclick="append('^')">^</button>
+ 
+            <button type="button" class="blue" onclick="append('sinh(')">sinh</button>
+            <button type="button" class="blue" onclick="append('cosh(')">cosh</button>
+            <button type="button" class="blue" onclick="append('tanh(')">tanh</button> 
+            <button type="button" class="blue" onclick="append('sqrt(')">√</button>
+
+            <button type="button" class="blue" onclick="append('log(')">log</button>
+            <button type="button" class="blue" onclick="append('ln(')">ln</button>
+            <button type="button" class="gray" onclick="append('.')">.</button>
+            <button type="button" class="blue" onclick="append('/')">÷</button>
+
+            <button type="button" class="gray" onclick="append('7')">7</button>
+            <button type="button" class="gray" onclick="append('8')">8</button>
+            <button type="button" class="gray" onclick="append('9')">9</button>
+            <button type="button" class="blue" onclick="append('*')">×</button>
+
+            <button type="button" class="gray" onclick="append('4')">4</button>
+            <button type="button" class="gray" onclick="append('5')">5</button>
+            <button type="button" class="gray" onclick="append('6')">6</button>
+            <button type="button" class="blue" onclick="append('-')">−</button>
+
+            <button type="button" class="gray" onclick="append('1')">1</button>
+            <button type="button" class="gray" onclick="append('2')">2</button>
+            <button type="button" class="gray" onclick="append('3')">3</button>
+            <button type="button" class="blue" onclick="append('+')">+</button>
+
+            <button type="button" class="gray" onclick="append('0')">0</button>
+            <button type="button" class="gray" onclick="append('00')">00</button>
+            {% comment %} <button type="button" class="blue" onclick="append('sqrt(')">√</button> {% endcomment %}
+            <button type="submit" class="darkblue" colspan="2">=</button>
+        </div>
+    </form>
+</body>
+</html>
