@@ -1,330 +1,189 @@
 from django.views import View
 from django.shortcuts import render
 import math
-from ipdb import set_trace
 
-# Simple math class
 class Mathematics:
-    def addition(self,a, b):
-        return a + b
-
-    def subtraction(self,a, b):
-        return a - b
-
-    def multiplication(self,a, b):
-        return a * b
-
-    def division(self,a, b):
-        if b == 0:
-            return ("division by zero")
-        return a / b
-
-    def sin(self,a):
-        return math.sin(math.radians(a))
-    
-    def cos(self,a): 
-        return math.cos(math.radians(a))
-    
-    def tan(self,a): 
-        return math.tan(math.radians(a))
-    
-    def sinh(self,a):
-        return math.sinh(a)
-
-    def cosh(self,a):
-        return math.cosh(a)
-
-    def tanh(self,a):
-        return math.tanh(a)
-    
-    def log(self, a): 
-        return math.log10(a)     
-    
-    def ln(self, a): 
-        return math.log(a)      
-    
-    def sqrt(self, a): 
-        return math.sqrt(a)
-    
-    def power(self, a, b): 
-        return math.pow(a, b)
-    
+    def addition(self, a, b): return a + b
+    def subtraction(self, a, b): return a - b
+    def multiplication(self, a, b): return a * b
+    def division(self, a, b): return a / b if b != 0 else float('inf')
+    def power(self, a, b): return math.pow(a, b)
+    def sin(self, a): return round(math.sin(math.radians(a)), 10)
+    def cos(self, a): return round(math.cos(math.radians(a)), 10)
+    def tan(self, a): return round(math.tan(math.radians(a)), 10)
+    def sinh(self, a): return round(math.sinh(math.radians(a)), 10)
+    def cosh(self, a): return round(math.cosh(math.radians(a)), 10)
+    def tanh(self, a): return round(math.tanh(math.radians(a)), 10)
+    def sqrt(self, a): return math.sqrt(a)
+    def log(self, a): return math.log10(a) if a > 0 else float('nan')
+    def ln(self, a): return math.log(a) if a > 0 else float('nan')
+    def factorial(self, a):
+        if a < 0 or not float(a).is_integer():
+            raise ValueError("Factorial only defined for non-negative integers.")
+        return math.factorial(int(a))
+    def modulus(self, a, b):
+        return a % b
 
 
 class Calculator(View):
     template_name = 'calculator.html'
-    
-    def get(self, req, *args, **kwargs):
-        # Render calculator with blank state
-        return render(req, self.template_name)
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
         expression = request.POST.get('my_post_param', '')
         expression = self.insert_multiplication(expression)
-        answer = None
-        error_message = ""
+        result = None
+        error_message = ''
 
         try:
-            answer = self.bodmas(expression)
-            expression = str(answer)
-            # while type(expression) != float:
-            #     o, a, b, part = self.bodmas(expression)
-            #     answer = self.evaluation(o, a, b)
-            #     expression = expression.replace(part, str(answer))
-
-            #     try:
-            #         expression = float(expression)
-            #     except:
-            #         pass
-
+            result = self.evaluate_expression(expression)
         except Exception as e:
             error_message = str(e)
 
-        context = {
-            'get_param': str(answer) if answer is not None else expression,
-            'result': expression if not error_message else '',
-            'error_message': error_message
-        }
+        return render(request, self.template_name, {
+            # 'result': result if not error_message else '',
+            'error_message': error_message,
+            'get_param': str(result) if result is not None else expression,
+        })
 
-        return render(request, self.template_name, context)
-
-    
-    def insert_multiplication(self, expression):
+    def insert_multiplication(self, expr):
+        funcs = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "log", "ln", "sqrt", "exp"]
         new_expr = ""
-        prev = ""
-        funcs = ["sin", "cos", "tan","sinh", "cosh", "tanh", "log", "ln", "sqrt"]  # "sinh", "cosh", "tanh",
         i = 0
-
-        while i < len(expression):
-            curr = expression[i]
-
-            # Case 1: number or ')' followed by '('
-            if (prev.isdigit() or prev == ')') and curr == '(':
+        prev = ''
+        while i < len(expr):
+            curr = expr[i]
+            # Case 1: digit or closing bracket followed by (
+            if (prev.isdigit() or prev == ')') and (curr == '(' or any(expr[i:].startswith(f) for f in funcs)):
                 new_expr += '*'
-
-            # Case 2: ')' followed by number
+            # Case 2: closing bracket followed by digit
             elif prev == ')' and curr.isdigit():
                 new_expr += '*'
-
-            # Case 3: digit or ')' followed by a function name (e.g., 2sin → 2*sin)
-            elif (prev.isdigit() or prev == ')') and any(expression[i:].startswith(func) for func in funcs):
-                new_expr += '*'
-
             new_expr += curr
             prev = curr
             i += 1
-
         return new_expr
 
-    
-    
-    def evaluation(self, o, a, b):
-        answer = 0
-        m = Mathematics()
-        if o == "+":
-            answer = m.addition(a,b)
-        if o == "-":
-            answer = m.subtraction(a,b)
-        if o == "*":
-            answer = m.multiplication(a,b)
-        if o == "/":
-            answer = m.division(a,b)
-        if o == "^":
-            answer = m.power(a,b)
-        if o == "sin":
-            answer = m.sin(a)
-        if o == "cos":
-            answer = m.cos(a)
-        if o == "tan":
-            answer = m.tan(a)
-        if o == "sinh":
-            answer = m.sinh(a)
-        if o == "cosh":
-            answer = m.cosh(a)
-        if o == "tanh":
-            answer = m.tanh(a)
-        if o == "log": 
-            answer= m.log(a)
-        if o == "ln": 
-            answer= m.ln(a)
-        if o == "sqrt":
-            answer= m.sqrt(a)
-        
-        return answer
-        
-        
-    def bodmas(self, expression):
-        funcs = ["sinh", "cos", "tan", "sin", "cosh", "tanh", "log", "ln", "sqrt"]
-        
-        while '(' in expression:
-            open_idx = -1
-            for i, char in enumerate(expression):
-                if char == '(':
-                    open_idx = i
-                elif char == ')' and open_idx != -1:
-                    sub_expr = expression[open_idx + 1:i]
-                    value = self.bodmas(sub_expr)  # Recursively solve inner expr
-                    expression = expression[:open_idx] + str(value) + expression[i + 1:]
-                    break
+    def evaluate_expression(self, expr):
+        if '(' in expr:
+            while '(' in expr:
+                open_idx = -1
+                for i in range(len(expr)):
+                    if expr[i] == '(':
+                        open_idx = i
+                    elif expr[i] == ')' and open_idx != -1:
+                        inner_expr = expr[open_idx+1:i]
+                        val = self.evaluate_expression(inner_expr)
+                        expr = expr[:open_idx] + str(val) + expr[i+1:]
+                        break
+        expr = self.handle_functions(expr)
+        return self.compute_bodmas(expr)
 
-        # Handle functions: sin, cos, etc.
-        for func in funcs:
-            while func in expression:
-                i = expression.find(func)
-                j = i + len(func)
-                num = ""
-                while j < len(expression) and (expression[j].isdigit() or expression[j] == '.' or expression[j] == '-'):
-                    num += expression[j]
+    def handle_functions(self, expr):
+        math_obj = Mathematics()
+        functions = ["sinh", "cosh", "tanh", "sin", "cos", "tan", "sqrt", "log", "ln"]
+        for func in functions:
+            while func in expr:
+                idx = expr.find(func)
+                j = idx + len(func)
+                if j < len(expr) and expr[j] == '(':
                     j += 1
-                if num == "":
-                    raise ValueError(f"Missing number after function '{func}'")
-                result = self.evaluation(func, float(num), 0)
-                expression = expression[:i] + str(result) + expression[j:]
+                    start = j
+                    count = 1
+                    while j < len(expr) and count > 0:
+                        if expr[j] == '(':
+                            count += 1
+                        elif expr[j] == ')':
+                            count -= 1
+                        j += 1
+                    value = self.evaluate_expression(expr[start:j-1])
+                else:
+                    start = j
+                    while j < len(expr) and (expr[j].isdigit() or expr[j] == '.' or expr[j] == '-'):
+                        j += 1
+                    value = float(expr[start:j])
+                val = float(value)
+                if func == 'sin': res = math_obj.sin(val)
+                elif func == 'cos': res = math_obj.cos(val)
+                elif func == 'tan': res = math_obj.tan(val)
+                elif func == 'sinh': res = math_obj.sinh(val)
+                elif func == 'cosh': res = math_obj.cosh(val)
+                elif func == 'tanh': res = math_obj.tanh(val)
+                elif func == 'sqrt': res = math_obj.sqrt(val)
+                elif func == 'log': res = math_obj.log(val)
+                elif func == 'ln': res = math_obj.ln(val)
+                expr = expr[:idx] + str(res) + expr[j:]
+        return expr
 
-        # Handle implicit multiplication: e.g., 2sin(30) or 3(4+5)
+    def compute_bodmas(self, expr):
+        math_obj = Mathematics()
+
+        expr = expr.replace('e+', 'e').replace('e-', 'ex')
+
+        expr = expr.replace('pi', str(math.pi))
+        expr = expr.replace('e', str(math.e))
+
+        # Step 1: Handle factorial (!)
         i = 0
-        while i < len(expression) - 1:
-            if (expression[i].isdigit() or expression[i] == ')') and (expression[i + 1].isalpha() or expression[i + 1] == '('):
-                expression = expression[:i + 1] + '*' + expression[i + 1:]
-            i += 1
+        while i < len(expr):
+            if expr[i] == '!':
+                # Go left to find the number before '!'
+                j = i - 1
+                num = ''
+                while j >= 0 and (expr[j].isdigit() or expr[j] == '.' or expr[j] == '-'):
+                    num = expr[j] + num
+                    j -= 1
+                if num == '':
+                    raise ValueError("No number before factorial (!)")
+                val = float(num)
+                res = math_obj.factorial(val)
+                expr = expr[:j + 1] + str(res) + expr[i + 1:]
+                i = j + len(str(res))
+            else:
+                i += 1
 
-        # Now, process operators in order of precedence
-        ops = ["^", "*", "/", "+", "-"]
+        # Step 2: Handle binary operations (with modulus % added)
+        ops = ["^", "*", "/", "%", "+", "-"]
         for op in ops:
             i = 0
-            while i < len(expression):
-                if expression[i] == op:
-                    # Extract left number
+            while i < len(expr):
+                if expr[i] == op and i != 0:
+                    # Extract left operand
                     j = i - 1
-                    left = ""
-                    while j >= 0 and (expression[j].isdigit() or expression[j] == '.' or expression[j] == '-'):
-                        left = expression[j] + left
+                    while j >= 0 and (expr[j].isdigit() or expr[j] == '.' or expr[j] == '-'):
                         j -= 1
+                    left = expr[j + 1:i]
 
-                    # Extract right number
+                    # Extract right operand
                     k = i + 1
-                    right = ""
-                    while k < len(expression) and (expression[k].isdigit() or expression[k] == '.' or expression[k] == '-'):
-                        right += expression[k]
+                    while k < len(expr) and (expr[k].isdigit() or expr[k] == '.' or expr[k] == '-'):
                         k += 1
+                    right = expr[i + 1:k]
 
-                    if left == "" or right == "":
-                        raise ValueError(f"Syntax error around operator '{op}'")
+                    if left == '' or right == '':
+                        raise ValueError(f"Invalid syntax around operator '{op}'")
 
                     a = float(left)
                     b = float(right)
-                    result = self.evaluation(op, a, b)
 
-                    expression = expression[:j + 1] + str(result) + expression[k:]
-                    i = -1  # Restart
+                    if op == '^':
+                        res = math_obj.power(a, b)
+                    elif op == '*':
+                        res = math_obj.multiplication(a, b)
+                    elif op == '/':
+                        res = math_obj.division(a, b)
+                    elif op == '%':
+                        res = math_obj.modulus(a, b)
+                    elif op == '+':
+                        res = math_obj.addition(a, b)
+                    elif op == '-':
+                        res = math_obj.subtraction(a, b)
+
+                    expr = expr[:j + 1] + str(res) + expr[k:]
+                    i = -1  # Reset
                 i += 1
+        expr = expr.replace('ex', 'e-')
 
-        return float(expression)
-        
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # def bodmas(self, expression):
-    #     funcs = ["sinh", "cos", "tan","sin", "cosh", "tanh", "log", "ln", "sqrt"]  # "sinh", "cosh", "tanh"
-    #     for func in funcs:
-    #         # set_trace()
-    #         if expression.split('(')[0] == func:
-                
-    #             i = expression.find(func)
-    #             start = i + len(func) + 1
-    #             end = expression.find(")", start)
-    #             if end == -1:
-    #                 raise ValueError(f"Missing closing parenthesis in {func}")
-    #             val = expression[start:end]
-    #             num = float(eval(val))  # Allow expression inside sin(45+45)
-    #             part = expression[i:end + 1]
-    #             return func, num, 0, part
-
-    #     for op in ["^", "/", "*", "+", "-"]:
-    #         i = self.find_operator_outside_parentheses(expression, op)
-    #         if i != -1:
-    #             a, b, part = self.get_numbers(expression, i)
-    #             return op, a, b, part
-
-    #     return "", 0, 0, expression
-
-    # def find_operator_outside_parentheses(self, expr, operator):
-    #     depth = 0
-    #     for i in range(len(expr)):
-    #         if expr[i] == '(':
-    #             depth += 1
-    #         elif expr[i] == ')':
-    #             depth -= 1
-    #         elif expr[i] == operator and depth == 0:
-    #             return i
-    #     return -1
-
-    # def get_numbers(self, expr, idx):
-    #     # LEFT
-    #     j = idx - 1
-    #     if expr[j] == ')':
-    #         count = 1
-    #         j -= 1
-    #         while j >= 0 and count > 0:
-    #             if expr[j] == ')':
-    #                 count += 1
-    #             elif expr[j] == '(':
-    #                 count -= 1
-    #             j -= 1
-    #         left = expr[j + 1:idx]
-    #     else:
-    #         left = ""
-    #         while j >= 0 and (expr[j].isdigit() or expr[j] == '.' or expr[j] == '-'):
-    #             left = expr[j] + left
-    #             j -= 1
-
-    #     # RIGHT
-    #     k = idx + 1
-    #     if expr[k] == '(':
-    #         count = 1
-    #         k += 1
-    #         start = k
-    #         while k < len(expr) and count > 0:
-    #             if expr[k] == '(':
-    #                 count += 1
-    #             elif expr[k] == ')':
-    #                 count -= 1
-    #             k += 1
-    #         right = expr[idx + 1:k]
-    #     else:
-    #         right = ""
-    #         while k < len(expr) and (expr[k].isdigit() or expr[k] == '.' or expr[k] == '-'):
-    #             right += expr[k]
-    #             k += 1
-
-    #     if not left.strip() or not right.strip():
-    #         raise ValueError(f"Syntax error near '{expr[idx]}': missing operand.")
-
-    #     try:
-    #         a = float(eval(left))
-    #         b = float(eval(right))
-    #     except:
-    #         raise ValueError(f"Invalid expressions near '{expr[idx]}': '{left}' and '{right}'")
-
-    #     part = expr[j + 1:k]
-    #     return a, b, part
-    
-    
+        return float(expr)
