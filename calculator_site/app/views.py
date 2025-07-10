@@ -37,14 +37,14 @@ class Calculator(View):
         result = None
         error_message = ''
 
-        try:
-            result = self.evaluate_expression(expression)
-        except Exception as e:
-            error_message = str(e)
+        # try:
+        result = self.evaluate_expression(expression)
+        # except Exception as e:
+        #     error_message = str(e)
 
         return render(request, self.template_name, {
-            # 'result': result if not error_message else '',
-            'error_message': error_message,
+            'result': result if not error_message else '',
+            # 'error_message': error_message,
             'get_param': str(result) if result is not None else expression,
         })
 
