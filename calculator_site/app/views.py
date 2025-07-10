@@ -123,6 +123,7 @@ class Calculator(View):
         expr = expr.replace('e+', 'e').replace('e-', 'ex')
 
         expr = expr.replace('pi', str(math.pi))
+
         expr = expr.replace('e', str(math.e))
 
         # Step 1: Handle factorial (!)
