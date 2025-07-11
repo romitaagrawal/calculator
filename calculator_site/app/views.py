@@ -45,6 +45,7 @@ class Calculator(View):
         # except Exception as e:
         #     error_message = str(e)
 
+
         return render(request, self.template_name, {
             # 'result': result if not error_message else '',
             'error_message': error_message,

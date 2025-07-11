@@ -103,8 +103,12 @@
         }
         function toggleHistory() {
         const panel = document.getElementById("historyPanel");
-        panel.style.display = panel.style.display === "none" ? "block" : "none";
-    }
+        if (panel.style.display === "none") {
+        panel.style.display = "block";
+        } else {
+        panel.style.display = "none";
+        }
+        }
     </script>
 </head>
 <body>
@@ -113,13 +117,6 @@
             {% csrf_token %}
             <input type="text" id="id_my_post_param" class="display " name="my_post_param"
            value="{% if error_message %}{{ error_message }}{% else %}{{ get_param }}{% endif %}" readonly>
-
-            {% comment %} <input type="text" id="id_my_post_param" class="display" name="my_post_param" value="{% if get_param %}{{ get_param }}{% endif %}" readonly>
-
-            {% if error_message %}
-                <p class="error">{{ error_message }}</p>
-            {% endif %} {% endcomment %}
-
             <div class="grid">
                 <button type="button" class="blue" onclick="append('(')">(</button>
                 <button type="button" class="blue" onclick="append(')')">)</button>
@@ -168,14 +165,12 @@
             </div>
         </form>
 
-
         <div class="history-container">
                 <button type="button" onclick="toggleHistory()" class="blue toggle-btn">
                     Show/Hide History
                 </button>
 
                 <div id="historyPanel" class="history-panel">
-                    <h3>History (Last 10):</h3>
                     <ol>
                         {% for item in history %}
                             <li>{{ item.expression }} = {{ item.result }}</li>
