@@ -1,15 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Django Calculator</title>
+    <title>Romita's Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background: #fff;
             display: flex;
+            justify-content: center
+        }
+        .container {
+            display: flex;
+            align-items: flex-start;
+            gap: 40px;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            padding: 20px;
+        }
+
+        .history-container {
+            max-width: 300px;
+        }
+
+        .toggle-btn {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .history-panel {
+            display: none;
+            margin-top: 10px;
+            background: #f5f7fa;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .history-panel ul {
+            max-height: 200px;
+            overflow-y: auto;
+            padding-left: 20px;
         }
 
         .calculator {
@@ -64,25 +92,6 @@
             const input = document.getElementById('id_my_post_param');
             input.value += val;
         }
-
-        {% comment %} function append(val) {
-            const input = document.getElementById('id_my_post_param');
-            const funcs = ['sin', 'cos', 'tan', 'sinh', 'cosh', 'tanh', 'log', 'ln', 'sqrt'];
-
-            if (funcs.includes(val)) {
-                if (input.value !== "") {
-                    input.value += "*" + val + "(";
-                } else {
-                    input.value += val + "(";
-                }
-            } else {
-                input.value += val;
-            }
-
-            console.log(input.value);
-        } {% endcomment %}
-
-
         function clearEntry() {
             const input = document.getElementById('id_my_post_param');
             input.value = input.value.slice(0, -1);
@@ -92,66 +101,88 @@
             const input = document.getElementById('id_my_post_param');
             input.value = '';
         }
+        function toggleHistory() {
+        const panel = document.getElementById("historyPanel");
+        panel.style.display = panel.style.display === "none" ? "block" : "none";
+    }
     </script>
 </head>
 <body>
-    <form method="post" class="calculator">
-        {% csrf_token %}
-        <input type="text" id="id_my_post_param" class="display " name="my_post_param"
-       value="{% if error_message %}{{ error_message }}{% else %}{{ get_param }}{% endif %}" readonly>
+    <div class="container">
+        <form method="post" class="calculator">
+            {% csrf_token %}
+            <input type="text" id="id_my_post_param" class="display " name="my_post_param"
+           value="{% if error_message %}{{ error_message }}{% else %}{{ get_param }}{% endif %}" readonly>
 
-        {% comment %} <input type="text" id="id_my_post_param" class="display" name="my_post_param" value="{% if get_param %}{{ get_param }}{% endif %}" readonly>
+            {% comment %} <input type="text" id="id_my_post_param" class="display" name="my_post_param" value="{% if get_param %}{{ get_param }}{% endif %}" readonly>
 
-        {% if error_message %}
-            <p class="error">{{ error_message }}</p>
-        {% endif %} {% endcomment %}
+            {% if error_message %}
+                <p class="error">{{ error_message }}</p>
+            {% endif %} {% endcomment %}
 
-        <div class="grid">
-            <button type="button" class="blue" onclick="append('(')">(</button>
-            <button type="button" class="blue" onclick="append(')')">)</button>
-            <button type="button" class="blue" onclick="clearEntry()">C</button>
-            <button type="button" class="blue" onclick="clearAll()">AC</button>
+            <div class="grid">
+                <button type="button" class="blue" onclick="append('(')">(</button>
+                <button type="button" class="blue" onclick="append(')')">)</button>
+                <button type="button" class="blue" onclick="clearEntry()">C</button>
+                <button type="button" class="blue" onclick="clearAll()">AC</button>
 
-            <button type="button" class="blue" onclick="append('sin(')">sin</button>
-            <button type="button" class="blue" onclick="append('cos(')">cos</button>
-            <button type="button" class="blue" onclick="append('tan(')">tan</button>
-            <button type="button" class="blue" onclick="append('^')">^</button>
+                <button type="button" class="blue" onclick="append('sin(')">sin</button>
+                <button type="button" class="blue" onclick="append('cos(')">cos</button>
+                <button type="button" class="blue" onclick="append('tan(')">tan</button>
+                <button type="button" class="blue" onclick="append('^')">^</button>
 
-            <button type="button" class="blue" onclick="append('sinh(')">sinh</button>
-            <button type="button" class="blue" onclick="append('cosh(')">cosh</button>
-            <button type="button" class="blue" onclick="append('tanh(')">tanh</button>
-            <button type="button" class="blue" onclick="append('sqrt(')">√</button>
+                <button type="button" class="blue" onclick="append('sinh(')">sinh</button>
+                <button type="button" class="blue" onclick="append('cosh(')">cosh</button>
+                <button type="button" class="blue" onclick="append('tanh(')">tanh</button>
+                <button type="button" class="blue" onclick="append('sqrt(')">√</button>
 
-            <button type="button" class="blue" onclick="append('log(')">log</button>
-            <button type="button" class="blue" onclick="append('ln(')">ln</button>
-            <button type="button" class="gray" onclick="append('.')">.</button>
-            <button type="button" class="blue" onclick="append('/')">÷</button>
+                <button type="button" class="blue" onclick="append('log(')">log</button>
+                <button type="button" class="blue" onclick="append('ln(')">ln</button>
+                <button type="button" class="gray" onclick="append('.')">.</button>
+                <button type="button" class="blue" onclick="append('/')">÷</button>
 
-            <button type="button" class="gray" onclick="append('7')">7</button>
-            <button type="button" class="gray" onclick="append('8')">8</button>
-            <button type="button" class="gray" onclick="append('9')">9</button>
-            <button type="button" class="blue" onclick="append('*')">×</button>
+                <button type="button" class="gray" onclick="append('7')">7</button>
+                <button type="button" class="gray" onclick="append('8')">8</button>
+                <button type="button" class="gray" onclick="append('9')">9</button>
+                <button type="button" class="blue" onclick="append('*')">×</button>
 
-            <button type="button" class="gray" onclick="append('4')">4</button>
-            <button type="button" class="gray" onclick="append('5')">5</button>
-            <button type="button" class="gray" onclick="append('6')">6</button>
-            <button type="button" class="blue" onclick="append('-')">−</button>
+                <button type="button" class="gray" onclick="append('4')">4</button>
+                <button type="button" class="gray" onclick="append('5')">5</button>
+                <button type="button" class="gray" onclick="append('6')">6</button>
+                <button type="button" class="blue" onclick="append('-')">−</button>
 
-            <button type="button" class="gray" onclick="append('1')">1</button>
-            <button type="button" class="gray" onclick="append('2')">2</button>
-            <button type="button" class="gray" onclick="append('3')">3</button>
-            <button type="button" class="blue" onclick="append('+')">+</button>
+                <button type="button" class="gray" onclick="append('1')">1</button>
+                <button type="button" class="gray" onclick="append('2')">2</button>
+                <button type="button" class="gray" onclick="append('3')">3</button>
+                <button type="button" class="blue" onclick="append('+')">+</button>
 
-            <button type="button" class="gray" onclick="append('0')">0</button>
-            <button type="button" class="gray" onclick="append('00')">00</button>
-            <button type="button" class="blue" onclick="append('pi')">π</button>
+                <button type="button" class="gray" onclick="append('0')">0</button>
+                <button type="button" class="gray" onclick="append('00')">00</button>
+                <button type="button" class="blue" onclick="append('pi')">π</button>
 
-            <button type="button" class="blue" onclick="append('e')">e</button>
+                <button type="button" class="blue" onclick="append('e')">e</button>
 
-            <button type="button" class="blue" onclick="append('%')">%</button>
-            <button type="button" class="blue" onclick="append('!')">!</button>
-            <button type="submit" class="darkblue" colspan="2">=</button>
+                <button type="button" class="blue" onclick="append('%')">%</button>
+                <button type="button" class="blue" onclick="append('!')">!</button>
+                <button type="submit" class="darkblue" colspan="2">=</button>
+            </div>
+        </form>
+
+
+        <div class="history-container">
+                <button type="button" onclick="toggleHistory()" class="blue toggle-btn">
+                    Show/Hide History
+                </button>
+
+                <div id="historyPanel" class="history-panel">
+                    <h3>History (Last 10):</h3>
+                    <ol>
+                        {% for item in history %}
+                            <li>{{ item.expression }} = {{ item.result }}</li>
+                        {% endfor %}
+                    </ol>
+                </div>
         </div>
-    </form>
+    </div>
 </body>
 </html>

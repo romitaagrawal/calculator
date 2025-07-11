@@ -27,6 +27,7 @@ class Mathematics:
 
 class Calculator(View):
     template_name = 'calculator.html'
+    history = []
 
     def get(self, request):
         return render(request, self.template_name)
@@ -39,15 +40,17 @@ class Calculator(View):
 
         # try:
         result = self.evaluate_expression(expression)
+        Calculator.history.insert(0, {'expression': expression, 'result': result})
+        Calculator.history = Calculator.history[:10]
         # except Exception as e:
         #     error_message = str(e)
 
         return render(request, self.template_name, {
-            'result': result if not error_message else '',
-            # 'error_message': error_message,
+            # 'result': result if not error_message else '',
+            'error_message': error_message,
             'get_param': str(result) if result is not None else expression,
+            'history': Calculator.history
         })
-
     def insert_multiplication(self, expr):
         funcs = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "log", "ln", "sqrt", "exp"]
         new_expr = ""
