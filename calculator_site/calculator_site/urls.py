@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app.views import Calculator
+from app.views import HistoryAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Calculator.as_view(), name='calculator'),
+    path('api/history/', HistoryAPI.as_view(), name='api_history'),
     # path('success/', Success.as_view(), name='success'),
 ]
 
