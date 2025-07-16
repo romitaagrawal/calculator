@@ -18,11 +18,14 @@ from django.contrib import admin
 from django.urls import path
 from app.views import Calculator
 from app.views import HistoryAPI
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Calculator.as_view(), name='calculator'),
     path('api/history/', HistoryAPI.as_view(), name='api_history'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     # path('success/', Success.as_view(), name='success'),
 ]
 

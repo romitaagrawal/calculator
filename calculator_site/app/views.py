@@ -5,12 +5,24 @@ from .models import CalculatorHistory
 from .serializers import CalculatorHistorySerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class HistoryAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        history = CalculatorHistory.objects.order_by('-timestamp')[:10]
+        history = CalculatorHistory.objects.filter(user=request.user).order_by('-timestamp')[:10]
         serializer = CalculatorHistorySerializer(history, many=True)
-        return Response({'history': serializer.data})
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CalculatorHistorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response({"status": "success"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class Mathematics:
     def addition(self, a, b): return a + b
@@ -35,12 +47,12 @@ class Mathematics:
         return a % b
 
 
-class Calculator(View):
+class Calculator(LoginRequiredMixin, View):
     template_name = 'calculator.html'
 
     def get(self, request):
-        history = CalculatorHistory.objects.order_by('-timestamp')[:10]
-        return render(request, self.template_name, {'history': history})
+        # history = CalculatorHistory.objects.order_by('-timestamp')[:10]
+        return render(request, self.template_name,)
 
     def post(self, request):
         expression = request.POST.get('my_post_param', '')
@@ -50,17 +62,17 @@ class Calculator(View):
 
         # try:
         result = self.evaluate_expression(expression)
-        CalculatorHistory.objects.create(expression=expression, result=result)
+        CalculatorHistory.objects.create(user=request.user, expression=expression, result=result)
         # except Exception as e:
         #     error_message = str(e)
 
-        history = CalculatorHistory.objects.order_by('-timestamp')[:10]
+        # history = CalculatorHistory.objects.order_by('-timestamp')[:10]
 
         return render(request, self.template_name, {
             # 'result': result if not error_message else '',
             'error_message': error_message,
             'get_param': str(result) if result is not None else expression,
-            'history': history
+            # 'history': history
         })
     def insert_multiplication(self, expr):
         funcs = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "log", "ln", "sqrt", "exp"]
