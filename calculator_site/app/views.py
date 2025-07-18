@@ -1,5 +1,5 @@
 from django.views import View
-from django.shortcuts import render
+from django.shortcuts import render , redirect
 import math
 from .models import CalculatorHistory
 from .serializers import CalculatorHistorySerializer
@@ -8,6 +8,18 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import RegisterForm
+
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()  # password is auto-hashed, confirm password auto-validated
+            return redirect('login')
+    else:
+        form = RegisterForm()
+    return render(request, 'register.html', {'form': form})
+
 
 class HistoryAPI(APIView):
     permission_classes = [IsAuthenticated]

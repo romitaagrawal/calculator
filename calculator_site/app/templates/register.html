@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Login</title>
+    <title>Register</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,14 +10,13 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
 
         .container {
             background: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
         }
 
@@ -35,7 +34,6 @@
         label {
             font-weight: bold;
             margin-bottom: 5px;
-            color: #555;
         }
 
         input {
@@ -43,18 +41,16 @@
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 14px;
         }
 
         button {
-            background-color:rgb(33, 118, 255);
+            background-color: rgb(33, 118, 255);
             color: white;
             padding: 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            transition: background 0.3s ease;
         }
 
         button:hover {
@@ -64,7 +60,6 @@
         p {
             text-align: center;
             margin-top: 10px;
-            font-size: 14px;
         }
 
         a {
@@ -75,25 +70,17 @@
         a:hover {
             text-decoration: underline;
         }
-
-        .errorlist {
-            color: red;
-            font-size: 13px;
-            margin: -10px 0 10px 0;
-            list-style: none;
-            padding: 0;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Login</h2>
+        <h2>Register</h2>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Login</button>
+            <button type="submit">Register</button>
         </form>
-        <p>Don’t have an account? <a href="{% url 'register' %}">Register here</a></p>
+        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
     </div>
 </body>
 </html>
